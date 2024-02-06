@@ -1,22 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { Post } from '@prisma/client';
-import { CreatePostDto } from './dto/CreatePost.dto';
+import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { Post } from './entities/post.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsService {
-    constructor(private prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(Post)
+    private postsRepository: Repository<Post>,
+  ) {}
 
-    getAll() {
-        return this.prisma.post.findMany();
-    }
+  create(user: number, createPostDto: CreatePostDto) {
+    const dataToCreate = { ...createPostDto };
+    dataToCreate['user'] = user;
+    const newPost = this.postsRepository.create(dataToCreate);
+    return this.postsRepository.save(newPost);
+  }
 
-    // create( data: CreatePostDto, author: number) {
-    //     return this.prisma.post.create({ data: { 
-    //         title: data.title,
-    //         content: data.content,
-    //         author: { connect: { id: author } },
-    //         createdAt: new Date(),
-    //      } });
-    // }
+  findAll() {
+    return this.postsRepository.find();
+  }
+
+  findOne(id: number) {
+    return this.postsRepository.findOne({ where: { id } });
+  }
+
+  update(id: number, updatePostDto: UpdatePostDto) {
+    return this.postsRepository.update(id, updatePostDto);
+  }
+
+  remove(id: number) {
+    return this.postsRepository.delete(id);
+  }
+
+  findUsersPosts(user: number) {
+    if (!user) console.log(user);
+    
+    return this.postsRepository.find({ where: { user: { id: user } } });
+  }
 }

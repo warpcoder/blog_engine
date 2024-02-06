@@ -1,10 +1,16 @@
 import { Module } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Post } from './entities/post.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
+  imports: [
+    TypeOrmModule.forFeature([Post]), 
+    JwtModule,
+  ],
   controllers: [PostsController],
-  providers: [PostsService, PrismaService],
+  providers: [PostsService],
 })
 export class PostsModule {}
