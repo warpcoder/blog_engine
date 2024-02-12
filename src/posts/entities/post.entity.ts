@@ -15,4 +15,7 @@ export class Post {
     @ManyToOne(() => User, user => user.posts, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
     user: User;
+
+    @Column()
+    visibility: 'public' | 'private';
 }
